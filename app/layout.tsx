@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { AuthProvider } from '@/contexts/auth-context'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'VideoConvert Pro - Professional Video Converter',
+  description: 'Professional video conversion platform with advanced encoding options. Convert MP4 to WebM VP9 format with superior compression and quality.',
+  generator: 'VideoConvert Pro',
 }
 
 export default function RootLayout({
@@ -17,10 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
-        <Toaster />
+        <AuthProvider>
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   )

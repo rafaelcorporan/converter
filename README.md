@@ -67,15 +67,41 @@ cd api
 python -m pip install -r requirements.txt
 ```
 
-### 4. Start the Backend Server
+### 4. Configuration Setup (Optional)
+The application uses centralized configuration with environment variable support:
+
 ```bash
-cd api
-python start_server.py
+# Copy environment template
+cp .env.example .env
+
+# Edit configuration if needed
+# All settings have sensible defaults
 ```
 
-The Python API will start on `http://localhost:5000`
+### 5. Quick Start (Recommended)
+Use the unified startup script that handles both frontend and backend:
 
-### 5. Start the Frontend Development Server
+```bash
+./start-unified.sh
+```
+
+This will:
+- ✅ Check FFmpeg installation
+- ✅ Set up Python virtual environment
+- ✅ Start unified backend on port 5001
+- ✅ Start frontend on port 3000
+- ✅ Validate service connectivity
+
+### 6. Manual Start (Alternative)
+#### Start Backend Server
+```bash
+cd api
+python unified_video_converter.py
+```
+
+The Python API will start on `http://localhost:5001`
+
+#### Start Frontend Development Server
 In a new terminal:
 ```bash
 npm run dev
@@ -107,19 +133,57 @@ The Next.js app will start on `http://localhost:3000`
 - **Frame Rate**: FPS setting
 - **Two-Pass**: Enable for better quality (slower)
 
+## Architecture
+
+### System Overview
+```
+┌─────────────────┐    HTTP/5001    ┌──────────────────┐
+│  Next.js        │ ──────────────► │ Python Flask     │
+│  Frontend       │                 │ Backend          │
+│  (Port 3000)    │ ◄────────────── │ (Port 5001)      │
+└─────────────────┘                 └──────────────────┘
+                                             │
+                                             ▼
+                                    ┌──────────────────┐
+                                    │ FFmpeg           │
+                                    │ Video Processing │
+                                    └──────────────────┘
+```
+
+### Configuration Management
+- **Centralized Config**: `config.json` - Single source of truth
+- **Environment Support**: `.env` - Development/production overrides
+- **Validation**: Automated consistency checking across all components
+
+### Service Communication
+- **API Base URL**: Configurable via environment (`NEXT_PUBLIC_API_URL`)
+- **Health Checks**: `/api/health` endpoint with monitoring
+- **Error Handling**: Centralized error messages and connection validation
+
 ## File Structure
 
 ```
 project/
-├── app/                    # Next.js app directory
-├── components/             # React components
-├── lib/                    # Utilities and API client
-├── api/                    # Python backend
-│   ├── video_converter.py  # Main Flask application
-│   ├── requirements.txt    # Python dependencies
-│   └── start_server.py     # Startup script
-├── uploads/                # Temporary upload directory
-└── outputs/                # Converted video output directory
+├── app/                         # Next.js app directory
+├── components/                  # React components
+├── lib/                         # Utilities and API client
+├── api/                         # Python backend
+│   ├── unified_video_converter.py  # Unified Flask application
+│   ├── config.py               # Configuration management
+│   ├── requirements.txt        # Python dependencies
+│   └── start_server.py         # Startup script
+├── config.json                 # Centralized configuration
+├── .env.example                # Environment template
+├── tests/                      # Integration test suite
+│   └── test_integration.py     # Comprehensive tests
+├── monitor/                    # Health monitoring
+│   └── health_monitor.py       # Real-time monitoring
+├── scripts/                    # Validation scripts
+│   ├── validate_config.py      # Configuration validation
+│   └── pre-commit-check.sh     # Pre-commit hooks
+├── logs/                       # Application logs
+├── uploads/                    # Temporary upload directory
+└── outputs/                    # Converted video output directory
 ```
 
 ## Development
@@ -137,19 +201,78 @@ cd api
 python video_converter.py  # Start Flask server directly
 ```
 
+## Testing & Validation
+
+### Configuration Validation
+Validate your configuration setup:
+
+```bash
+python3 scripts/validate_config.py
+```
+
+### Integration Testing
+Run comprehensive integration tests:
+
+```bash
+python3 tests/test_integration.py
+```
+
+### Health Monitoring
+Monitor service health in real-time:
+
+```bash
+python3 monitor/health_monitor.py
+```
+
+### Connectivity Testing
+Quick connectivity test:
+
+```bash
+python3 tests/test_integration.py connectivity
+```
+
 ## Troubleshooting
 
 ### Common Issues
 
 1. **FFmpeg not found**: Install FFmpeg using the instructions above
 2. **Python dependencies**: Run `pip install -r requirements.txt` in the api directory
-3. **CORS errors**: Ensure the backend is running on port 5000
+3. **CORS errors**: Ensure the backend is running on port 5001
 4. **File upload issues**: Check that uploads/ and outputs/ directories exist
+5. **Configuration errors**: Run `python3 scripts/validate_config.py` to check configuration consistency
+6. **Connection failures**: Use `./start-unified.sh` for automatic service startup and validation
+
+### Advanced Troubleshooting
+
+#### Service Health Check
+```bash
+curl http://localhost:5001/api/health
+```
+
+#### Configuration Validation
+```bash
+# Validate all configuration files
+python3 scripts/validate_config.py
+
+# Check port consistency
+grep -r "5001" . --include="*.py" --include="*.ts" --include="*.js" --include="*.md"
+```
+
+#### Log Analysis
+```bash
+# Backend logs
+tail -f logs/health_monitor.log
+
+# Check service status
+python3 monitor/health_monitor.py
+```
 
 ### Logs
 
 - Frontend logs appear in the browser console
 - Backend logs appear in the terminal running the Python server
+- Health monitoring logs: `logs/health_monitor.log`
+- Configuration validation output: console
 
 ## Production Deployment
 
@@ -162,7 +285,7 @@ npm start
 ### Backend
 ```bash
 cd api
-gunicorn -w 4 -b 0.0.0.0:5000 video_converter:app
+gunicorn -w 4 -b 0.0.0.0:5001 video_converter:app
 ```
 
 ## License

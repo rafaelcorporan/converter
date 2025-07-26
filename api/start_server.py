@@ -39,7 +39,7 @@ def start_server():
     """Start the Flask server"""
     print("Starting Video Converter API...")
     try:
-        subprocess.run([sys.executable, 'video_converter.py'], check=True)
+        subprocess.run([sys.executable, 'unified_video_converter.py'], check=True)
     except KeyboardInterrupt:
         print("\nServer stopped by user")
     except subprocess.CalledProcessError as e:
@@ -50,7 +50,7 @@ def main():
     print("=" * 30)
     
     # Check if we're in the right directory
-    if not Path('video_converter.py').exists():
+    if not Path('unified_video_converter.py').exists():
         print("✗ Please run this script from the api/ directory")
         sys.exit(1)
     

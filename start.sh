@@ -38,7 +38,7 @@ else
     source venv/bin/activate
 fi
 
-python simple_video_converter.py &
+python unified_video_converter.py &
 BACKEND_PID=$!
 cd ..
 

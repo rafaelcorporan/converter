@@ -1,0 +1,60 @@
+{
+  "services": {
+    "backend": {
+      "host": "0.0.0.0",
+      "port": 5001,
+      "debug": true
+    },
+    "frontend": {
+      "host": "localhost",
+      "port": 3000
+    }
+  },
+  "api": {
+    "base_url": "http://localhost:5001",
+    "endpoints": {
+      "health": "/api/health",
+      "convert": "/api/convert",
+      "progress": "/api/progress",
+      "download": "/api/download"
+    }
+  },
+  "conversion": {
+    "supported_formats": [".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm"],
+    "default_settings": {
+      "quality": 32,
+      "bitrate": 1000,
+      "resolution": "original",
+      "frameRate": 30,
+      "preset": "web-standard",
+      "twoPass": false
+    },
+    "presets": {
+      "web-standard": {
+        "quality": 32,
+        "bitrate": 2000,
+        "resolution": "original",
+        "frameRate": 30,
+        "twoPass": false
+      },
+      "high-quality": {
+        "quality": 18,
+        "bitrate": 4000,
+        "resolution": "1920x1080",
+        "frameRate": 30,
+        "twoPass": true
+      },
+      "max-compression": {
+        "quality": 45,
+        "bitrate": 1000,
+        "resolution": "854x480",
+        "frameRate": 24,
+        "twoPass": true
+      }
+    }
+  },
+  "directories": {
+    "uploads": "uploads",
+    "outputs": "outputs"
+  }
+}

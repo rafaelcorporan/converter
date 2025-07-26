@@ -7,9 +7,11 @@ import { ConversionQueue } from "@/components/conversion-queue"
 import { VideoPreview } from "@/components/video-preview"
 import { ResultsPanel } from "@/components/results-panel"
 import { Header } from "@/components/header"
+import { LoginForm } from "@/components/login-form"
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/contexts/auth-context"
 
 export interface VideoFile {
   id: string
@@ -56,6 +58,11 @@ export default function VideoConverter() {
   const [settings, setSettings] = useState(defaultSettings)
   const [activeTab, setActiveTab] = useState("upload")
   const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <LoginForm />
+  }
 
   // Handle shared results from URL parameters
   useEffect(() => {
